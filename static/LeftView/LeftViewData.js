@@ -8,6 +8,7 @@ class LeftViewData {
     }
 
     setData(data) {
-        this.data = data;
+        this.embedding = data.embedding;
+        this.labels = data.labels;
     }
 }

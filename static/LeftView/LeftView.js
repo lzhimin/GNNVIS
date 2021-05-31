@@ -8,7 +8,7 @@ class LeftView extends BasicView {
 
         this.margin = { 'left': 20, 'right': 20, 'top': 20 };
         
-        subscribe('embedding', this.setData.bind(this))
+        subscribe('data', this.setData.bind(this))
     }
 
     init() {
@@ -38,8 +38,8 @@ class LeftView extends BasicView {
         let width = 500;
         let height = 500; 
 
-        [x_min, x_max] = d3.extent(this.dataManager.data, (d) => { return d[0] });
-        [y_min, y_max] = d3.extent(this.dataManager.data, (d) => { return d[1] });
+        [x_min, x_max] = d3.extent(this.dataManager.embedding, (d) => { return d[0] });
+        [y_min, y_max] = d3.extent(this.dataManager.embedding, (d) => { return d[1] });
         
         let x_axis = d3.scaleLinear().domain([x_min , x_max * 1.1]).range([x, x + width]);
         let y_axis = d3.scaleLinear().domain([y_max * 1.1, y_min]).range([y, y + height]);
@@ -56,7 +56,7 @@ class LeftView extends BasicView {
             .call(d3.axisLeft(y_axis).ticks(10));
         
         this.svg.selectAll('.embedding_points')
-            .data(this.dataManager.data)
+            .data(this.dataManager.embedding)
             .enter()
             .append('circle')
             .attr('cx', (d) => {
@@ -67,9 +67,11 @@ class LeftView extends BasicView {
             })
             .attr('r', 3)
             .style('fill', (d, i) => {
-                return 'steelblue';
+                return this.dataManager.labels[i] == 1?"steelblue":"tomato";
             })
-            .style('fill-opacity', 0.2);
+            .style('fill-opacity', (d, i) => {
+                return this.dataManager.labels[i] == 1?0:0.2;
+            });
     }
 
 

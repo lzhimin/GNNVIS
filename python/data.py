@@ -8,15 +8,21 @@ def getdata(request):
     data = np.loadtxt('data/data.txt')
     data = Normalizer().fit_transform(data)
 
-    return {"embedding": getEmbedding(data, 'tsne')}
+    labels = np.loadtxt('data/labels.txt').tolist()
+
+    return {"embedding": getEmbedding(data, 'tsne'), 'labels': labels}
 
 
-def getEmbedding(data, type='tsne'):
+def getEmbedding(data, type='pca'):
+
+    embedding = []
 
     if type == 'pca':
-        return PCA(n_components=2).fit_transform(data).tolist()
+        # PCA(n_components=2).fit_transform(data).tolist()
+        embedding = np.loadtxt('data/pca.output', delimiter=',')
 
     if type == 'tsne':
-        return TSNE(n_components=2).fit_transform(data).tolist()
+        # TSNE(n_components=2).fit_transform(data).tolist()
+        embedding = np.loadtxt('data/tsne.output', delimiter=',')
 
-    return []
+    return embedding.tolist()
