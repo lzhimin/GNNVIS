@@ -4,6 +4,7 @@ let config = {
         content: [
             {
                 type: 'component',
+                width: 90,
                 componentName: 'LeftView',
                 title: 'Left View'
         
