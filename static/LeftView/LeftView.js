@@ -56,11 +56,62 @@ class LeftView extends BasicView {
         }
 
         this.svg.append('g')
-            .call(d3.brush([x, y], [100, 100]))
-            .on("start brush", () => {
-    
+            .call(d3.brush().extent([[x, y], [x+width, y+height]])
+            .on("end", (event) => {
+                let coordinate = event.selection;
+                let selects_elements = new Set();
+
+                if (coordinate != null)
+                this.tsne_embedding
+                    .each((d, i, nodes) => {
+                        if (isBrushed(coordinate, +$(nodes[i])[0].getAttribute('cx'), +$(nodes[i])[0].getAttribute('cy'))) {
+                            selects_elements.add(i);
+                            return this.dataManager.labels[i] == 1 ? "rgb(228,26,28)" : "rgb(55,55,55)";
+                        } else
+                            return 'gray';
+                    });
+                
+                if (!selects_elements.size) {
+                    this.tsne_embedding.style('fill', (d, i) => {
+                        return this.dataManager.labels[i] == 1 ? "rgb(228,26,28)" : "rgb(55,55,55)";
+                    });
+
+                    this.pca_embedding.style('fill', (d, i) => {
+                        return this.dataManager.labels[i] == 1 ? "rgb(228,26,28)" : "rgb(55,55,55)";
+                    });
+
+                    this.parallel_paths.style('stroke', (d, i) => {
+                        return this.dataManager.labels[i] == 1 ? "rgb(228,26,28)" : "rgb(55,55,55)";
+                    }).style("opacity", (d, i) => {
+                        return 0.5;
+                    });
+                } else {
+                    this.tsne_embedding.style('fill', (d, i) => {
+                        if (selects_elements.has(i)) {
+                            return this.dataManager.labels[i] == 1 ? "rgb(228,26,28)" : "rgb(55,55,55)";
+                        } else
+                            return 'gray';
+                    });
+
+                    this.pca_embedding.style('fill', (d, i) => {
+                        if (selects_elements.has(i)) {
+                            return this.dataManager.labels[i] == 1 ? "rgb(228,26,28)" : "rgb(55,55,55)";
+                        } else
+                            return 'gray';
+                    });
+
+                    this.parallel_paths.style('stroke', (d, i) => {
+                        if (selects_elements.has(i)) {
+                            return this.dataManager.labels[i] == 1 ? "rgb(228,26,28)" : "rgb(55,55,55)";
+                        } else
+                            return 'gray';
+                    }).style("opacity", (d, i) => {
+                        return selects_elements.has(i) ? 0.5 : 0.05;
+                    });
+                }
+                
                  
-            });
+            }));
             
     }
 
