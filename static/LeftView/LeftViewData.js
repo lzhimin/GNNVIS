@@ -12,5 +12,7 @@ class LeftViewData {
         this.labels = data.labels;
         this.dataset = data.datasets
         this.column_names = data.names
+
+        this.config = data.config;
     }
 }

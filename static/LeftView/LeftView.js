@@ -9,6 +9,8 @@ class LeftView extends BasicView {
         this.margin = { 'left': 200, 'right': 20, 'top': 20 };
         
         subscribe('data', this.setData.bind(this));
+
+        subscribe('labels_update', this.update_label.bind(this))
     }
 
     init() {
@@ -24,7 +26,6 @@ class LeftView extends BasicView {
         //binding the user event
         //this.bindingEvent();
     }
-
     
     draw() {
         this.init();
@@ -66,47 +67,54 @@ class LeftView extends BasicView {
                     .each((d, i, nodes) => {
                         if (isBrushed(coordinate, +$(nodes[i])[0].getAttribute('cx'), +$(nodes[i])[0].getAttribute('cy'))) {
                             selects_elements.add(i);
-                            return this.dataManager.labels[i] == 1 ? "rgb(228,26,28)" : "rgb(55,55,55)";
+                            let label = this.dataManager.labels[i] - 1;
+                            return "rgb(" + this.dataManager.config.color[label] + ")";
                         } else
                             return 'gray';
                     });
                 
                 if (!selects_elements.size) {
                     this.tsne_embedding.style('fill', (d, i) => {
-                        return this.dataManager.labels[i] == 1 ? "rgb(228,26,28)" : "rgb(55,55,55)";
+                        let label = this.dataManager.labels[i] - 1;
+                        return "rgb(" + this.dataManager.config.color[label] + ")";
                     });
 
                     this.pca_embedding.style('fill', (d, i) => {
-                        return this.dataManager.labels[i] == 1 ? "rgb(228,26,28)" : "rgb(55,55,55)";
+                        let label = this.dataManager.labels[i] - 1;
+                        return "rgb(" + this.dataManager.config.color[label] + ")";
                     });
 
                     this.parallel_paths.style('stroke', (d, i) => {
-                        return this.dataManager.labels[i] == 1 ? "rgb(228,26,28)" : "rgb(55,55,55)";
+                        let label = this.dataManager.labels[i] - 1;
+                        return "rgb(" + this.dataManager.config.color[label] + ")";
                     }).style("opacity", (d, i) => {
                         return 0.5;
                     });
                 } else {
                     this.tsne_embedding.style('fill', (d, i) => {
                         if (selects_elements.has(i)) {
-                            return this.dataManager.labels[i] == 1 ? "rgb(228,26,28)" : "rgb(55,55,55)";
+                            let label = this.dataManager.labels[i] - 1;
+                            return "rgb(" + this.dataManager.config.color[label] + ")";
                         } else
                             return 'gray';
                     });
 
                     this.pca_embedding.style('fill', (d, i) => {
                         if (selects_elements.has(i)) {
-                            return this.dataManager.labels[i] == 1 ? "rgb(228,26,28)" : "rgb(55,55,55)";
+                            let label = this.dataManager.labels[i] - 1;
+                            return "rgb(" + this.dataManager.config.color[label] + ")";
                         } else
                             return 'gray';
                     });
 
                     this.parallel_paths.style('stroke', (d, i) => {
                         if (selects_elements.has(i)) {
-                            return this.dataManager.labels[i] == 1 ? "rgb(228,26,28)" : "rgb(55,55,55)";
+                            let label = this.dataManager.labels[i] - 1;
+                            return "rgb(" + this.dataManager.config.color[label] + ")";
                         } else
                             return 'gray';
                     }).style("opacity", (d, i) => {
-                        return selects_elements.has(i) ? 0.5 : 0.05;
+                        return selects_elements.has(i) ? 0.5 : 0;
                     });
                 }
                 
@@ -148,7 +156,8 @@ class LeftView extends BasicView {
             })
             .attr('r', 3)
             .style('fill', (d, i) => {
-                return this.dataManager.labels[i] == 1?"rgb(228,26,28)":"rgb(55,55,55)";
+                let label = this.dataManager.labels[i]-1;
+                return "rgb(" + this.dataManager.config.color[label] + ")";
             })
             .style('fill-opacity', (d, i) => {
                 return 0.5;
@@ -187,9 +196,8 @@ class LeftView extends BasicView {
             .attr("d", path)
             .style("fill", "none")
             .style("stroke", (d, i) => {
-                //55,55,55
-                //228,26,28
-                return this.dataManager.labels[i] == 1 ? "rgb(228,26,28)" : "rgb(55,55,55)";
+                let label = this.dataManager.labels[i] - 1;
+                return "rgb(" + this.dataManager.config.color[label] + ")";
             })
             .style("opacity", 0.5);
 
@@ -218,8 +226,27 @@ class LeftView extends BasicView {
         return paths;
     }
 
+
     setData(msg, data) {
         this.dataManager.setData(data);
         this.draw();
+
+        this.setup_auto_label_update();
+    }
+
+    
+    //setup the auto label update operation
+    setup_auto_label_update() {
+        //define a global timer that repeatly check the server label file
+        function auto_fetch_labels() {
+            fetch_labels();
+        }
+
+        clearInterval(auto_fetch_labels)
+        setInterval(auto_fetch_labels, 2000);
+    }
+
+    update_label() {
+        console.log('update label');
     }
 }

@@ -10,3 +10,16 @@ function fetch_data(json) {
         }
     });
 }
+
+function fetch_labels() {
+    $.ajax({
+        url: '/_fetch_label',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({}),
+        dataType: 'json',
+        success: function (data) {
+            publish("labels_update", data);
+        }
+    });
+}

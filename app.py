@@ -16,8 +16,16 @@ def index():
 def _fetch_data():
     json_request = request.get_json()
 
-    print(json_request)
     return json.dumps(data.getdata(json_request))
+
+
+@app.route("/_fetch_label", methods=["GET", "POST"])
+def _fetch_label():
+    json_request = request.get_json()
+
+    print('fetch labels')
+
+    return json.dumps(data.getLabel(json_request))
 
 
 if __name__ == '__main__':

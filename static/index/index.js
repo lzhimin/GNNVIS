@@ -24,7 +24,4 @@ myLayout.on('itemCreated', (item) => {
 
 myLayout.init();
 
-// define global function
-//function loadData() {
 fetch_data("");
-//}
